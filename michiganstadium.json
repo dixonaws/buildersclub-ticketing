@@ -1,0 +1,36 @@
+[
+    {
+        "seatid": "afd7d2b0-a3a1-4de0-8b66-1422ca8014bc",
+        "section": 1,
+        "row": 1,
+        "lastupdated": 1701951713.912107,
+        "seat": 1,
+        "orderid": "",
+        "status": "open",
+        "block": 1
+
+    },
+    {
+        "seatid": "871d5443-b63b-4a1a-8008-fb5fbb05e886",
+        "section": 1,
+        "row": 1,
+        "lastupdated": 1701951713.912107,
+        "seat": 2,
+        "orderid": 7380,
+        "status": "pending",
+        "block": 1
+
+    },
+        {
+        "seatid": "75953650-ad7f-49b8-a4b2-431efa66f78c",
+        "section": 1,
+        "row": 1,
+        "lastupdated": 1701951713.912107,
+        "seat": 3,
+        "orderid": 7381,
+        "status": "sold",
+        "block": 1
+
+    }
+
+]
