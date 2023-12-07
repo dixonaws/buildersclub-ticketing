@@ -153,7 +153,7 @@ def usage_demo():
     print("-" * 88)
 
     stadium_file_name = "michiganstadium.json"
-    print(f"Getting seat data from {stadium_file_name}.")
+    print(f"Getting seat data from {stadium_file_name}... ", end="")
     try:
         with open(stadium_file_name) as json_file:
             seat_data = json.load(json_file, parse_float=decimal.Decimal)
@@ -168,14 +168,15 @@ def usage_demo():
         )
         return
 
+    print("done.")
     seat_schema = [
         {"name": "seatid", "key_type": "HASH", "type": "S"},
         {"name": "block", "key_type": "RANGE", "type": "N"},
     ]
 
-    print(f"Creating stadium table and waiting until they exist...")
+    print("Creating stadium table... ", end="")
     seat_table = create_table(f"demo-stadium-{time.time_ns()}", seat_schema)
-    print(f"Created {seat_table.name}.")
+    print(f"done, created {seat_table.name}.")
 
     print(f"Putting {len(seat_data)} seats into {seat_table.name}.")
     fill_table(seat_table, seat_data)
