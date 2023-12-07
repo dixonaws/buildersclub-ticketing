@@ -1,6 +1,9 @@
+import json
 import uuid
 import time
 import random
+from datetime import datetime
+
 
 # create a stadium in DynamoDB where each item represents an individual seat
 # the stadium has 50 sections, each with 200 rows
@@ -13,24 +16,34 @@ def generate_data():
     lst_seats = []
 
     dict_seat = {}
+    int_block=1
+    for int_section in range(1, 51):
+        print("Section: " + str(int_section)+ ", Block: " + str(int_block))
 
-    for int_section in range(1,51):
+        # each block is 2 sections (200 rows of 10 seats each) = 4000 seats
+        if (int_section % 2 == 0):
+            int_block = int_block+1
+
         for int_row in range(1, 201):
             for int_seat in range(1, 11):
-                int_block=1
-                print("section: " + str(int_section) + ", row: " + str(int_row) + ", seat: " + str(int_seat))
+                dict_seat = {}
                 dict_seat['seatid'] = str(uuid.uuid4())
                 dict_seat['section'] = int(int_section)
                 dict_seat['row'] = int(int_row)
                 dict_seat['lastupdated'] = time.time()
-                dict_seat['seat']=int_seat
-                dict_seat['orderid']=''
-                dict_seat['status']=random.choice(['OPEN', 'PENDING', 'SOLD'])
-                dict_seat['block']=int_block
+                dict_seat['seat'] = int_seat
+                dict_seat['orderid'] = ''
+                dict_seat['status'] = random.choice(['OPEN', 'PENDING', 'SOLD'])
+                dict_seat['block'] = int_block
+                # print("Adding seat: " + dict_seat['seatid'] + ", section: " + str(int_section) + ", row: " + str(int_row) + ", seat: " + str(int_seat) + ", status: " + dict_seat['status'] + ", block: " + str(int_block))
                 lst_seats.append(dict_seat)
 
     print(str(len(lst_seats)) + " seats in lst_seats.")
-    print(lst_seats.sort(key=lambda x: x['row']))
+    file_seats = open("seat_data.txt", "w")
+    file_seats.write(json.dumps(lst_seats))
+    # print(lst_seats)
+    print(json.dumps(lst_seats))
+
 
 """
 {

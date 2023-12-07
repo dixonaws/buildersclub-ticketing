@@ -10,14 +10,23 @@ from botocore.exceptions import ClientError
 
 # create a stadium in DynamoDB where each item represents an individual seat
 # the stadium has 50 sections, each with 200 rows
-# each row has 100 seats
-# sections are made up of blocks of 250 seats (for viewing in the interface)
-# the total seating capacity is 100,000 (200*100=2000, 2000+50=100000)
+# each row has 10 seats
+# sections are made up of blocks of 4000 seats (2 sections, for viewing in the interface)
+# the total seating capacity is 100,000 (200*10=2000, 2000*50=100000)
 
 logger = logging.getLogger(__name__)
 dynamodb = boto3.resource("dynamodb")
+dynamodb_client=boto3.client("dynamodb")
 
 MAX_GET_SIZE = 100  # Amazon DynamoDB rejects a get batch larger than 100 items.
+
+def delete_table_if_exists(str_table_name):
+    lst_tables=dynamodb_client.list_tables()['TableNames']
+    if str_table_name in lst_tables:
+        print(str_table_name + " table exists!, deleting... ")
+        tbl_table=dynamodb.Table(str_table_name)
+        tbl_table.delete()
+        tbl_table.wait_until_not_exists()
 
 def create_table(table_name, schema):
     """
@@ -28,6 +37,8 @@ def create_table(table_name, schema):
                    of the keys that identify items in the table.
     :return: The newly created table.
     """
+    delete_table_if_exists(table_name)
+
     try:
         table = dynamodb.create_table(
             TableName=table_name,
@@ -43,8 +54,9 @@ def create_table(table_name, schema):
         )
         table.wait_until_exists()
         logger.info("Created table %s.", table.name)
+
     except ClientError:
-        logger.exception("Couldn't create movie table.")
+        logger.exception("Couldn't create table.")
         raise
     else:
         return table
@@ -157,7 +169,8 @@ def usage_demo():
     try:
         with open(stadium_file_name) as json_file:
             seat_data = json.load(json_file, parse_float=decimal.Decimal)
-            seat_data = seat_data[:500]  # Only use the first 500 movies for the demo.
+            # seat_data = seat_data[:500]  # Only use the first 500 movies for the demo.
+            seat_data = seat_data
     except FileNotFoundError:
         print(
             f"The file input file was not found in the current working directory "
@@ -175,7 +188,7 @@ def usage_demo():
     ]
 
     print("Creating stadium table... ", end="")
-    seat_table = create_table(f"demo-stadium-{time.time_ns()}", seat_schema)
+    seat_table = create_table((stadium_file_name.split("."))[0], seat_schema)
     print(f"done, created {seat_table.name}.")
 
     print(f"Putting {len(seat_data)} seats into {seat_table.name}.")
