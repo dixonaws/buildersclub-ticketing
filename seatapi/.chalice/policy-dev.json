@@ -14,6 +14,12 @@
       "Resource": "arn:aws:dynamodb:us-east-1:477157386854:table/michigan_stadium"
     },
     {
+      "Sid": "VisualEditor2",
+      "Effect": "Allow",
+      "Action": "dynamodb:UpdateItem",
+      "Resource": "arn:aws:dynamodb:us-east-1:477157386854:table/michigan_stadium"
+    },
+    {
       "Sid": "VisualEditor1",
       "Effect": "Allow",
       "Action": [

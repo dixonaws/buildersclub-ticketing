@@ -12,8 +12,7 @@ dynamo_resource = boto3.resource('dynamodb')
 def index():
     return {'hello': 'world'}
 
-
-@app.route('/{str_tablename}/{str_block}')
+@app.route('/{str_tablename}/{str_block}', methods=['GET'])
 def get_block(str_tablename, str_block):
     str_return_message = "table: " + str_tablename + ", block: " + str_block
     print("Getting: " + str_return_message)
@@ -34,6 +33,11 @@ def get_block(str_tablename, str_block):
         raise
     else:
         return response["Items"]
+
+@app.route('/str_tablename}/{str_seatid', methods=['POST'])
+def update_seat(str_tablename, str_seatid):
+    pass
+
 
 # The view function above will return {"hello": "world"}
 # whenever you make an HTTP GET request to '/'.
