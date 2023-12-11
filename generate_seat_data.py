@@ -3,6 +3,7 @@ import uuid
 import time
 import random
 from datetime import datetime
+import pprint
 
 
 # create a stadium in DynamoDB where each item represents an individual seat
@@ -11,6 +12,12 @@ from datetime import datetime
 # sections are made up of blocks of 250 seats (for viewing in the interface)
 # the total seating capacity is 100,000 (200*10=20000, 20000*50=100000)
 
+def write_data_file(lst_seats, str_filename):
+    file_seats = open(str_filename, "w")
+    file_seats.write(json.dumps(lst_seats))
+    file_seats.flush()
+    file_seats.close()
+
 
 def generate_data():
     lst_seats = []
@@ -18,7 +25,7 @@ def generate_data():
     dict_seat = {}
     int_block=1
     for int_section in range(1, 51):
-        print("Section: " + str(int_section)+ ", Block: " + str(int_block))
+        # print("Section: " + str(int_section)+ ", Block: " + str(int_block))
 
         # each block is 2 sections (200 rows of 10 seats each) = 4000 seats
         if (int_section % 2 == 0):
@@ -39,13 +46,18 @@ def generate_data():
                 lst_seats.append(dict_seat)
 
     print(str(len(lst_seats)) + " seats in lst_seats.")
-    file_seats = open("seat_data.txt", "w")
-    file_seats.write(json.dumps(lst_seats))
-    # print(lst_seats)
-    print(json.dumps(lst_seats))
+
+    print("Writing data file... ", end="")
+    write_data_file(lst_seats, 'seat_data.txt')
+    print("done.")
+
+    print("First three entries in the data file:")
+    pp=pprint.PrettyPrinter(indent=4)
+    pp.pprint(lst_seats[:3])
 
 
 """
+# reference seat entry
 {
     "seatid": "afd7d2b0-a3a1-4de0-8b66-1422ca8014bc",
     "section": 1,
@@ -56,7 +68,7 @@ def generate_data():
     "status": "open",
     "block": 1
 
-},"""
+}"""
 
 if __name__ == '__main__':
     generate_data()
