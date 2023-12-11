@@ -1,3 +1,5 @@
+import sys
+
 import boto3
 import decimal
 import json
@@ -154,30 +156,25 @@ def get_batch_data(seat_table, seat_list):
     else:
         return retrieved
 
-def usage_demo():
+def usage_demo(str_input_data_file, int_items_to_process):
     """
     Shows how to use the Amazon DynamoDB batch functions.
     """
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-    print("-" * 88)
-    print("Welcome to the Builder's Club ticketing system demo.")
-    print("-" * 88)
 
-    stadium_file_name = "michiganstadium.json"
-    print(f"Getting seat data from {stadium_file_name}... ", end="")
+
+    print(f"Getting seat data from {str_input_data_file}... ", end="")
     try:
-        with open(stadium_file_name) as json_file:
-            seat_data = json.load(json_file, parse_float=decimal.Decimal)
-            # seat_data = seat_data[:500]  # Only use the first 500 movies for the demo.
-            seat_data = seat_data
+        with open(str_input_data_file) as json_input_data:
+            seat_data = json.load(json_input_data, parse_float=decimal.Decimal)
+            if(int_items_to_process==0): int_items_to_process=len(seat_data)
+            print("Processing " + str(int_items_to_process) + " items...")
+            seat_data = seat_data[:int_items_to_process]  # Only use the first int_items_to_process
     except FileNotFoundError:
         print(
             f"The file input file was not found in the current working directory "
-            f"{os.getcwd()}.\n"
-            f"1. Download the sample zip file from https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/samples/moviedata.zip.\n"
-            f"2. Extract '{stadium_file_name}' to {os.getcwd()}.\n"
-            f"3. Run the usage demo again."
+
         )
         return
 
@@ -187,8 +184,8 @@ def usage_demo():
         {"name": "block", "key_type": "RANGE", "type": "N"},
     ]
 
-    print("Creating stadium table... ", end="")
-    seat_table = create_table((stadium_file_name.split("."))[0], seat_schema)
+    print("Creating venue table... ", end="")
+    seat_table = create_table((str_input_data_file.split("."))[0], seat_schema)
     print(f"done, created {seat_table.name}.")
 
     print(f"Putting {len(seat_data)} seats into {seat_table.name}.")
@@ -207,9 +204,30 @@ def usage_demo():
     print("The first 2 seats returned are: ")
     pprint.pprint(items[seat_table.name][:2])
 
+def syntax():
+    print("buildersclub-ticketing load_data_dynamo")
+    print("Load seat data into a DynamoDB table")
+    print()
+    print("Syntax: python load_data_dynamo.py [input_datafile.txt] [items_to_process")
+    print()
+    print("Required: input_datafile.txt represents the file to import into DynamoDB. The table name will be the same as the file name, without the extension.")
+    print("Required: items_to_process represents the number of items to input into the the DynamoDB table. Specify 0 to input all items.")
+
 
 if __name__ == "__main__":
-    usage_demo()
+    try:
+        str_input_data_file=sys.argv[1]
+        int_items_to_process=int(sys.argv[2])
+
+        print("Using parameters:")
+        print("Input data file: " + str_input_data_file)
+        print("Items to process: " + str(int_items_to_process))
+        usage_demo(str_input_data_file, int_items_to_process)
+    except IndexError:
+        syntax()
+
+
+
 
 
 
