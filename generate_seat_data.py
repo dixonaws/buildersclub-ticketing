@@ -4,6 +4,7 @@ import time
 import random
 from datetime import datetime
 import pprint
+import sys
 
 
 # create a stadium in DynamoDB where each item represents an individual seat
@@ -12,14 +13,13 @@ import pprint
 # sections are made up of blocks of 250 seats (for viewing in the interface)
 # the total seating capacity is 100,000 (200*10=20000, 20000*50=100000)
 
-def write_data_file(lst_seats, str_filename):
-    file_seats = open(str_filename, "w")
-    file_seats.write(json.dumps(lst_seats))
-    file_seats.flush()
-    file_seats.close()
+def write_data_file(lst_seats, str_data_file):
+    file_data_file = open(str_data_file, "w")
+    file_data_file.write(json.dumps(lst_seats))
+    file_data_file.flush()
+    file_data_file.close()
 
-
-def generate_data():
+def generate_data(str_data_file):
     lst_seats = []
 
     dict_seat = {}
@@ -48,7 +48,7 @@ def generate_data():
     print(str(len(lst_seats)) + " seats in lst_seats.")
 
     print("Writing data file... ", end="")
-    write_data_file(lst_seats, 'seat_data.txt')
+    write_data_file(lst_seats, str_data_file)
     print("done.")
 
     print("First three entries in the data file:")
@@ -70,5 +70,20 @@ def generate_data():
 
 }"""
 
+def syntax():
+    print("buildersclub-ticketing generate_seat_data")
+    print("Creates a JSON file of 100,000 seats that represent a stadium")
+    print()
+    print("Syntax: python generate_seat_data.py [output_datafile.txt]")
+    print()
+    print("output_datafile.txt represents the file to write")
+
+
 if __name__ == '__main__':
-    generate_data()
+    try:
+        str_data_file=sys.argv[1]
+        print("Using parameters:")
+        print("Data file: " + str_data_file)
+        generate_data(str_data_file)
+    except IndexError:
+        syntax()
